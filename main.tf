@@ -11,23 +11,29 @@ resource "azurerm_orbital_contact_profile" "orbital_contact_profiles" {
   minimum_elevation_degrees         = each.value.minimum_elevation_degrees
   tags                              = each.value.tags
 
-  links {
-    channels {
-      bandwidth_mhz              = each.value.links.channels.bandwidth_mhz
-      center_frequency_mhz       = each.value.links.channels.center_frequency_mhz
-      demodulation_configuration = each.value.links.channels.demodulation_configuration
-      end_point {
-        end_point_name = each.value.links.channels.end_point.end_point_name
-        ip_address     = each.value.links.channels.end_point.ip_address
-        port           = each.value.links.channels.end_point.port
-        protocol       = each.value.links.channels.end_point.protocol
+  dynamic "links" {
+    for_each = each.value.links
+    content {
+      dynamic "channels" {
+        for_each = links.value.channels
+        content {
+          bandwidth_mhz              = channels.value.bandwidth_mhz
+          center_frequency_mhz       = channels.value.center_frequency_mhz
+          demodulation_configuration = channels.value.demodulation_configuration
+          end_point {
+            end_point_name = channels.value.end_point.end_point_name
+            ip_address     = channels.value.end_point.ip_address
+            port           = channels.value.end_point.port
+            protocol       = channels.value.end_point.protocol
+          }
+          modulation_configuration = channels.value.modulation_configuration
+          name                     = channels.value.name
+        }
       }
-      modulation_configuration = each.value.links.channels.modulation_configuration
-      name                     = each.value.links.channels.name
+      direction    = links.value.direction
+      name         = links.value.name
+      polarization = links.value.polarization
     }
-    direction    = each.value.links.direction
-    name         = each.value.links.name
-    polarization = each.value.links.polarization
   }
 }
 

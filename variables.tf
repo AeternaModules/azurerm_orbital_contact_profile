@@ -39,8 +39,8 @@ EOT
     event_hub_uri                     = optional(string)
     minimum_elevation_degrees         = optional(number)
     tags                              = optional(map(string))
-    links = object({
-      channels = object({
+    links = list(object({
+      channels = list(object({
         bandwidth_mhz              = number
         center_frequency_mhz       = number
         demodulation_configuration = optional(string)
@@ -52,11 +52,27 @@ EOT
         })
         modulation_configuration = optional(string)
         name                     = string
-      })
+      }))
       direction    = string
       name         = string
       polarization = string
-    })
+    }))
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.orbital_contact_profiles : (
+        length(v.links) >= 1
+      )
+    ])
+    error_message = "Each links list must contain at least 1 items"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.orbital_contact_profiles : (
+        alltrue([for item in v.links : (length(item.channels) >= 1)])
+      )
+    ])
+    error_message = "Each channels list must contain at least 1 items"
+  }
 }
 
