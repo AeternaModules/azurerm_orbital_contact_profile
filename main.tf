@@ -20,11 +20,14 @@ resource "azurerm_orbital_contact_profile" "orbital_contact_profiles" {
           bandwidth_mhz              = channels.value.bandwidth_mhz
           center_frequency_mhz       = channels.value.center_frequency_mhz
           demodulation_configuration = channels.value.demodulation_configuration
-          end_point {
-            end_point_name = channels.value.end_point.end_point_name
-            ip_address     = channels.value.end_point.ip_address
-            port           = channels.value.end_point.port
-            protocol       = channels.value.end_point.protocol
+          dynamic "end_point" {
+            for_each = channels.value.end_point
+            content {
+              end_point_name = end_point.value.end_point_name
+              ip_address     = end_point.value.ip_address
+              port           = end_point.value.port
+              protocol       = end_point.value.protocol
+            }
           }
           modulation_configuration = channels.value.modulation_configuration
           name                     = channels.value.name

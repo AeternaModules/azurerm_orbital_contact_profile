@@ -44,12 +44,12 @@ EOT
         bandwidth_mhz              = number
         center_frequency_mhz       = number
         demodulation_configuration = optional(string)
-        end_point = object({
+        end_point = list(object({
           end_point_name = string
           ip_address     = optional(string)
           port           = string
           protocol       = string
-        })
+        }))
         modulation_configuration = optional(string)
         name                     = string
       }))
