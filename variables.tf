@@ -74,5 +74,13 @@ EOT
     ])
     error_message = "Each channels list must contain at least 1 items"
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.orbital_contact_profiles : (
+        alltrue([for item in v.links : (alltrue([for item in item.channels : (length(item.end_point) >= 1)]))])
+      )
+    ])
+    error_message = "Each end_point list must contain at least 1 items"
+  }
 }
 
